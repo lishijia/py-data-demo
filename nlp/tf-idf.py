@@ -1,55 +1,56 @@
 # coding=utf-8
-# 计算文章语句向量
-import jieba
+import os
+import math
 
-def word_to_vector(union_set, seg_list):
-    data_vector=[0]*len(union_set)
-    index=0
-    for word in union_set:
-        data_vector[index] = seg_list.count(word)
-        index += 1
-    return data_vector
+dir_path = "data"
+doc_dict = dict()
+index = 0
 
-stopWords = set()
-lines = open("stop-word", 'r')
-for line in lines:
-    if len(line.strip()) == 0:
-        continue
-    stopWords.add(line.strip())
+# 统计词频
+for file_name in os.listdir(dir_path):
+    file_path = dir_path + "/" + file_name
+    # if index > 10:
+    #     break
+    index += 1
+    word_dict = dict()
+    sum_cnt = 0
+    for line in open(file_path, 'r'):
+        if len(line.strip()) == 0:
+            continue
+        for word in line.strip().split(" "):
+            if len(word.strip()) == 0:
+                continue
+            if word_dict.get(word, -1) == -1:
+                word_dict[word] = 1
+            else:
+                word_dict[word] += 1
+            sum_cnt += 1
+    for word in word_dict.keys():
+        tmp = word_dict[word] / float(sum_cnt)
+        word_dict[word] = tmp
+        # print "%s %f %d" % (word, word_dict[word], sum_cnt)
 
-# for word in stopWords:
-#     print word
+    doc_dict[file_name] = word_dict
 
-s1 = "这只皮靴号码大了。那只号码合适"
-s2 = "这只皮靴号码不小，那只更合适"
+doc_num = float(index)
 
-s1_seg = "/".join(x for x in jieba.cut(s1, True) if x!="")
-s2_seg = "/".join(x for x in jieba.cut(s2, True) if x!="")
+# 统计单个此在多少篇文章中出现
+doc_freq = dict()
+for doc in doc_dict:
+    for word in doc_dict[doc].keys():
+        if doc_freq.get(word, -1) == -1:
+            doc_freq[word] = 1
+        else:
+            doc_freq[word] += 1
 
-# word ='这'
-#
-# if word in stopWords:
-#     print word
+# 套idf公式
+for word in doc_freq.keys():
+    doc_freq[word] = math.log(doc_num/float(doc_freq[word]+1))
+    print "%s %f" % (word, doc_freq[word])
+# print(doc_dict['5yule.seg.cln.txt']['毒'])
 
-# s1_list = jieba.cut(s1, cut_all=True)
-# for word in s1_list:
-#     wordTmp = word.encode("utf-8")
-#     if wordTmp != "" and wordTmp not in stopWords:
-#         print wordTmp
-
-# s1_seg_list = [x for x in jieba.cut(s1, True) if x != "" and x.encode("utf-8") not in stopWords]
-# s2_seg_list = [x for x in jieba.cut(s2, True) if x != "" and x.encode("utf-8") not in stopWords]
-
-s1_seg_list = [x for x in jieba.cut(s1, True) if x != ""]
-s2_seg_list = [x for x in jieba.cut(s2, True) if x != ""]
-
-s1_seg_set = set(s1_seg_list)
-s2_seg_set = set(s2_seg_list)
-s1_with_s2_seg_set = s1_seg_set.union(s1_seg_set)
-
-s1_vector = word_to_vector(s1_with_s2_seg_set, s1_seg_list)
-s2_vector = word_to_vector(s1_with_s2_seg_set, s2_seg_list)
-print s1_vector
-print s2_vector
-
-
+# 套tf*idf
+# for doc in doc_dict.keys():
+#     for word in doc_dict[doc].keys():
+#         doc_dict[doc][word] *= doc_freq[word]
+# print(doc_dict['5yule.seg.cln.txt']['毒'])
