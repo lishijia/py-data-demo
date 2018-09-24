@@ -3,7 +3,7 @@
 import jieba
 
 def word_to_vector(union_set, seg_list):
-    data_vector=[0]*len(union_set)
+    data_vector = [0] * len(union_set)
     index=0
     for word in union_set:
         data_vector[index] = seg_list.count(word)
