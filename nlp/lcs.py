@@ -3,8 +3,8 @@ def lcs(a, b):
     m = len(b)
 
     mean_len = (m+n)/2.0
-    # l = [[0]*(m+1) for i in range(n+1)]
-    l = [[0] * (m+1)] * (n+1)
+    l = [[0]*(m+1) for i in range(n+1)]
+    # l = [[0] * (m+1)] * (n+1)
     for i in range(n+1)[1:]:
         for j in range(m+1)[1:]:
             if a[i-1] == b[j-1]:
