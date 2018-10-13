@@ -1,0 +1,2 @@
+hive> add file hdfs:////jiarong/hive/tmp/udf-hive.py;
+hive> select transform(product) using 'python udf-hive.py' as product from lsj_item;
