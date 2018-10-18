@@ -6,6 +6,13 @@ dir_path = "data"
 doc_dict = dict()
 index = 0
 
+stopWords = set()
+lines = open("stop-word", 'r')
+for line in lines:
+    if len(line.strip()) == 0:
+        continue
+    stopWords.add(line.strip())
+
 # 循环读取每篇文章
 for file_name in os.listdir(dir_path):
     file_path = dir_path + "/" + file_name
@@ -21,6 +28,8 @@ for file_name in os.listdir(dir_path):
             continue
         for word in line.strip().split(" "):
             if len(word.strip()) == 0:
+                continue
+            if word in stopWords:
                 continue
             if word_dict.get(word, -1) == -1:
                 word_dict[word] = 1
